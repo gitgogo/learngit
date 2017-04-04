@@ -68,3 +68,53 @@ def handle_money(money):
         if not index%3:
             result+=money_int[index:index+3]+','
     return result.strip(',')[::-1]
+
+#数据库操作+excel文件
+import MySQLdb
+import random
+from openpyxl import Workbook
+
+conn=MySQLdb.connect(
+	host='192.168.90.207',
+	port=3306,
+	user='9drug_test',
+	passwd='Sx*30EE#&2rf',
+	db='appOms1')
+
+cur=conn.cursor()
+select="SELECT GOODS_NO,GOODS_NO_69 FROM goods LIMIT 550"
+select_test="SELECT * FROM student"
+
+insert="INSERT student(name,class,age) VALUES(%s,%s,%s)"
+
+#新建excel文件
+wb=Workbook()
+ws=wb.active
+ws.title='DataTest'
+ws.append(['GOODS_NO','GOODS_NO_69'])
+
+#新增数据
+for i in range(30):
+	name=random.choice(['Tom','Lily','One','Jack'])
+	cla=random.choice(['1-2','2-3','3-4','4-5','5-6'])
+	age=str(random.randint(5,40))
+	cur.execute(insert,(name,cla,age))
+
+#删除数据
+delete="DELETE FROM student WHERE name='Jack'"
+cur.execute(delete)
+
+#更新数据
+update="UPDATE student SET class='三年二班' WHERE name='Tom'"
+cur.execute(update)
+
+#查询数据500条，写入excel文件，测试数据
+num=cur.execute(select)
+datas=cur.fetchmany(500)
+for data in datas:
+	ws.append(data)
+wb.save('e:\\test_data.xlsx')
+#关闭数据库链接
+cur.close()
+conn.commit()
+conn.close()
