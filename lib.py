@@ -118,3 +118,59 @@ wb.save('e:\\test_data.xlsx')
 cur.close()
 conn.commit()
 conn.close()
+
+#修改图片尺寸大小
+from PIL import Image
+import os
+def do_resize(filepath,part_size=(750,212),percent=0.5):
+	img=Image.open(filepath)
+	# img_size=img.size
+	w,h=img.size
+	print img_size
+	# img1=img.resize(map(lambda x:int(x*percent) ,img_size))
+	# img1.resize(w/2,h/2)
+	img1=img.resize(part_size)
+
+	print img1.size
+	new_file=os.path.splitext(filepath)[0]+'_copy.png'
+	img1.save(new_file)
+
+do_resize(r'C:\Users\Administrator\Desktop\banner\0001.png')
+
+#生成验证码图片
+from PIL import Image
+from PIL import ImageFilter
+from PIL import ImageDraw, ImageFont
+import os
+import random
+import string
+# 随机字母:
+def rndChar():
+    return random.choice(string.letters+string.digits)
+
+# 随机颜色1:
+def rndColor():
+    return (random.randint(64, 255), random.randint(64, 255), random.randint(64, 255))
+
+# 随机颜色2:
+def rndColor2():
+    return (random.randint(32, 127), random.randint(32, 127), random.randint(32, 127))
+
+# 240 x 60:
+width = 60 * 4
+height = 60
+image = Image.new('RGB', (width, height), (255, 255, 255))
+# 创建Font对象:
+font = ImageFont.truetype('Arial.ttf', 36)
+# 创建Draw对象:
+draw = ImageDraw.Draw(image)
+# 填充每个像素:
+for x in range(width):
+    for y in range(height):
+        draw.point((x, y), fill=rndColor())
+# 输出文字:
+for t in range(4):
+    draw.text((60 * t + 10, 10), rndChar(), font=font, fill=rndColor2())
+# 模糊:
+image = image.filter(ImageFilter.GaussianBlur)
+image.save('code.jpg', 'jpeg')
